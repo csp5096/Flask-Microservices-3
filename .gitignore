@@ -1,0 +1,5 @@
+.vscode/
+node_modules/
+__pycache__/requests.cpython-34.pyc
+package-lock.json
+Pipfile
