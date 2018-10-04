@@ -13,10 +13,23 @@
   <body>
     <div class="container">
       <h1></h1>
-      <div align="right"> Welcome {{ session }}</div>
+      <div align="right"> Welcome {{ user['given_name'] }}</div>
       <br>
       <div id="react"></div>
     </div>
+
+     <!-- Local Storage Session for Auth0 -->
+    <script>
+      // Check browser support
+      if (typeof(Storage) !== "undefined") {
+      // Store
+        localStorage.setItem("sessionid","{{ user['nickname'] }}" );
+      // Retrieve
+        document.getElementById("react").innerHTML = localStorage.getItem("sessionid");
+      } else {
+        document.getElementById("react").innerHTML = "Sorry, your browser does not support Web Storage...";
+      }
+    </script>
 
     <!-- scripts -->
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>

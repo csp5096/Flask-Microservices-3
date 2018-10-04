@@ -4,15 +4,24 @@ from flask import Flask, flash, render_template, flash, request, jsonify, redire
 from flask import abort
 from flask_cors import CORS, cross_origin
 from flask import make_response, url_for
-from requests import Requests
+from request import Requests
 from pymongo import MongoClient
-from flask_pymongo import PyMongo
+from flask.ext.pymongo import PyMongo
 from time import gmtime, strftime
+
+from auth0.v3.authentication import GetToken
+from auth0.v3.authentication import Users
+from dotenv import load_dotenv
+from flask import Flask
+from flask import redirect
+from flask import render_template
+from flask import send_from_directory
 from flask.ext.mongoalchemy import MongoAlchemy
 
 import bcrypt
 import json
 import random
+import os
 
 # Object creation
 app = Flask(__name__)
@@ -52,6 +61,25 @@ def create_mongodatabase():
         print("Database creation failed!!")
 
 # API Routes
+
+@app.route('/callback')
+def callback_handling():
+    code = request.args.get('code')
+    get_token = GetToken('manishsethis.auth0.com')
+    auth0_users = Users('manishsethis.auth0.com')
+    token = get_token.authorization_code(os.environ['CLIENT_ID'],
+                                         os.environ['CLIENT_SECRET'], code, 'http://localhost:5000/callback')
+    user_info = auth0_users.userinfo(token['access_token'])
+    # print(token)
+    session['profile'] = json.loads(user_info)
+    return redirect('/dashboard')
+
+@app.route("/dashboard")
+# @requires_auth
+def dashboard():
+    # print(session['profile'])
+    return render_template('index.html', user=session['profile'])
+
 @app.route('/')
 def home():
     if not session.get('logged_in'):
@@ -63,7 +91,7 @@ def home():
 def index():
     return render_template('index.html', session = session['username'])
 
-@app.route('/login', methods=['POST'])
+@app.route('/', methods=['POST'])
 def do_admin_login():
     users = mongo.db.users
     api_list=[]

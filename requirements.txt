@@ -6,3 +6,4 @@ flask-pymongo
 flask-mongoalchemy
 auth0-python
 requests
+python-dotenv
