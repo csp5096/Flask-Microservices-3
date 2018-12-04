@@ -1,4 +1,5 @@
 #!/usr/bin/python
+#event sourcing module
 
 from aggregate import Aggregate
 from errors import InvalidOperationError
